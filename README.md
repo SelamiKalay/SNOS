@@ -2,6 +2,10 @@
 
 > **English:** A hobby 32-bit x86 operating system written from scratch in freestanding C++ and NASM assembly — GDT/IDT, physical memory manager and heap, VESA/keyboard/mouse/RTC drivers, a windowed desktop GUI, a RAM-disk file system, a terminal and a text editor. Boots via Multiboot (Limine/GRUB).
 
+| Masaüstü | Terminal |
+|---|---|
+| ![SNOS masaüstü](docs/masaustu.png) | ![SNOS terminali](docs/terminal.png) |
+
 32-bit x86 mimarisi için sıfırdan yazılmış, bare-metal bir hobi işletim sistemi.
 Herhangi bir hazır çekirdek veya standart kütüphane kullanılmadan, freestanding
 C++ ve Assembly ile geliştirilmektedir.
