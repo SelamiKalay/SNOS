@@ -1,79 +1,86 @@
 # SNOS
 
-> **English:** A hobby 32-bit x86 operating system written from scratch in freestanding C++ and NASM assembly — GDT/IDT, physical memory manager and heap, VESA/keyboard/mouse/RTC drivers, a windowed desktop GUI, a RAM-disk file system, a terminal and a text editor. Boots via Multiboot (Limine/GRUB).
+**English** | [Türkçe](README.tr.md)
 
-| Masaüstü | Terminal |
+| Desktop | Terminal |
 |---|---|
-| ![SNOS masaüstü](docs/masaustu.png) | ![SNOS terminali](docs/terminal.png) |
+| ![SNOS desktop](docs/masaustu.png) | ![SNOS terminal](docs/terminal.png) |
 
-32-bit x86 mimarisi için sıfırdan yazılmış, bare-metal bir hobi işletim sistemi.
-Herhangi bir hazır çekirdek veya standart kütüphane kullanılmadan, freestanding
-C++ ve Assembly ile geliştirilmektedir.
+A hobby bare-metal operating system for the 32-bit x86 architecture, written from
+scratch. It is developed in freestanding C++ and Assembly without any existing
+kernel or standard library.
 
-> Durum: **v0.1** — erken geliştirme aşamasında, eğitim amaçlı bir proje.
+> Status: **v0.1** — early development, an educational project.
 
-## Özellikler
+## Features
 
-- **Multiboot uyumlu önyükleme** — Limine (ISO) veya GRUB ile yüklenir,
-  800×600×32 grafik modu ister
-- **CPU altyapısı** — GDT, IDT, kesme servis rutinleri (ISR) ve PIC yapılandırması
-- **Bellek yönetimi**
-  - Bitmap tabanlı fiziksel bellek yöneticisi (4 KB çerçeveler, Multiboot bellek haritasından)
+- **Multiboot-compliant boot** — loaded by Limine (ISO) or GRUB, requests an
+  800×600×32 graphics mode
+- **CPU setup** — GDT, IDT, interrupt service routines (ISR) and PIC configuration
+- **Memory management**
+  - Bitmap-based physical memory manager (4 KB frames, built from the Multiboot memory map)
   - First-fit kernel heap (32 MB)
-- **Sürücüler** — VESA framebuffer, PS/2 klavye, PS/2 fare, RTC (gerçek zamanlı saat)
-- **Grafik arayüz** — framebuffer çizim katmanı, bitmap font, fare imleci,
-  görev çubuğu ve saat içeren bir masaüstü, log konsolu
-- **RAM disk dosya sistemi** — bellekte dosya ve klasör oluşturma/silme
-- **Uygulamalar**
+- **Drivers** — VESA framebuffer, PS/2 keyboard, PS/2 mouse, RTC (real-time clock)
+- **Graphical interface** — framebuffer drawing layer, bitmap font, mouse cursor,
+  a desktop with a taskbar and clock, log console
+- **RAM disk file system** — create and delete files and folders in memory
+- **Applications**
   - **Terminal** — `help`, `version`, `clear`, `ls`, `mkdir`, `touch`, `rm`,
-    `cat`, `note`, `shutdown`, `exit` komutları
-  - **SNOS Note** — RAM disk üzerindeki dosyalar için basit metin düzenleyici
+    `cat`, `note`, `shutdown`, `exit` commands
+  - **SNOS Note** — a simple text editor for files on the RAM disk
 
-## Kullanılan Teknolojiler
+## Tech Stack
 
-- **C++17** (freestanding, `-fno-exceptions -fno-rtti`) — çekirdeğin tamamı
-- **NASM Assembly** — Multiboot giriş noktası ve kesme stub'ları
-- **i686-elf çapraz derleyici** (GCC/LD) ve özel linker script
-- **Makefile** — derleme, ISO oluşturma ve çalıştırma
-- **Limine / GRUB** — önyükleyici
-- **QEMU** — test ortamı
+- **C++17** (freestanding, `-fno-exceptions -fno-rtti`) — the entire kernel
+- **NASM Assembly** — Multiboot entry point and interrupt stubs
+- **i686-elf cross compiler** (GCC/LD) and a custom linker script
+- **Makefile** — building, ISO creation and running
+- **Limine / GRUB** — bootloader
+- **QEMU** — test environment
 
-## Klasör Yapısı
+## Project Structure
 
 ```
-boot/          Multiboot başlığı ve giriş noktası (boot.asm)
-kernel/        Çekirdek kaynak kodu
-  memory/      Fiziksel bellek yöneticisi ve heap
-  drivers/     VESA, klavye, fare, RTC sürücüleri
-  gui/         Framebuffer, font, imleç, masaüstü, log konsolu
-  fs/          RAM disk dosya sistemi
-  apps/        Terminal ve SNOS Note
-include/       Freestanding header'lar (stdint, string, io, multiboot)
-grub/          GRUB yapılandırması
-iso_root/      ISO imajı için geçici dizin (make iso ile oluşturulur)
+boot/          Multiboot header and entry point (boot.asm)
+kernel/        Kernel source code
+  memory/      Physical memory manager and heap
+  drivers/     VESA, keyboard, mouse, RTC drivers
+  gui/         Framebuffer, font, cursor, desktop, log console
+  fs/          RAM disk file system
+  apps/        Terminal and SNOS Note
+include/       Freestanding headers (stdint, string, io, multiboot)
+grub/          GRUB configuration
+iso_root/      Temporary directory for the ISO image (created by make iso)
 linker.ld      Linker script
 ```
 
-## Derleme ve Çalıştırma
+## Building and Running
 
-Gereksinimler (Windows'ta MSYS2 ile):
+Requirements (on Windows via MSYS2):
 
 ```bash
 pacman -S mingw-w64-i686-cross-i686-elf-gcc nasm xorriso qemu
 ```
 
 ```bash
-make          # çekirdeği derler (build/snos.elf)
-make iso      # Limine ile önyüklenebilir ISO oluşturur (build/snos.iso)
-make run      # ISO'yu QEMU'da çalıştırır
-make clean    # derleme çıktılarını temizler
+make          # builds the kernel (build/snos.elf)
+make iso      # creates a bootable ISO with Limine (build/snos.iso)
+make run      # runs the ISO in QEMU
+make clean    # removes build output
 ```
 
-Oluşan `build/snos.iso` imajı QEMU, VirtualBox gibi sanal makinelerde
-(Legacy BIOS modu) çalıştırılabilir.
+The resulting `build/snos.iso` image can be run in virtual machines such as QEMU
+or VirtualBox (Legacy BIOS mode).
 
-## Motivasyon
+### Usage
 
-Bu proje, bir işletim sisteminin en temel seviyede — bilgisayar açıldığı andan
-itibaren — nasıl çalıştığını anlamak ve düşük seviye sistem programlama
-becerilerini geliştirmek amacıyla sürdürülen kişisel bir çalışmadır.
+| Where | Exit |
+|---|---|
+| Terminal | type `exit` and press Enter |
+| SNOS Note | `Ctrl + Q` (save with `Ctrl + S`) |
+
+## Motivation
+
+This is a personal project aimed at understanding how an operating system works at
+the lowest level — from the moment the computer powers on — and at building
+low-level systems programming skills.
