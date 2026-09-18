@@ -44,7 +44,7 @@ kernel/        Çekirdek kaynak kodu
   apps/        Terminal ve SNOS Note
 include/       Freestanding header'lar (stdint, string, io, multiboot)
 grub/          GRUB yapılandırması
-iso_root/      ISO imajının kök dizini
+iso_root/      ISO imajı için geçici dizin (make iso ile oluşturulur)
 linker.ld      Linker script
 ```
 
