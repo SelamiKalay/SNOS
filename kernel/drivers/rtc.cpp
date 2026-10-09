@@ -8,7 +8,7 @@ uint8_t rtc_day = 0;
 uint8_t rtc_month = 0;
 uint16_t rtc_year = 0;
 
-static int get_update_in_progress_flag() {
+[[maybe_unused]] static int get_update_in_progress_flag() {
     outb(0x70, 0x0A);
     return (inb(0x71) & 0x80);
 }

@@ -1,0 +1,46 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    name: cekirdek + ISO + QEMU acilis testi
+    runs-on: ubuntu-latest
+    env:
+      # i686-elf cross derleyici yerine sistem GCC'si 32 bit freestanding modda
+      SNOS_CC: g++ -m32 -fno-pie -fno-stack-protector -Werror
+      SNOS_LD: ld -m elf_i386 -z noexecstack
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Araclar
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q nasm g++-multilib xorriso qemu-system-x86
+
+      - name: Cekirdek derle (make)
+        run: make -j"$(nproc)" CC="$SNOS_CC" LD="$SNOS_LD"
+
+      - name: ISO olustur (make iso)
+        run: make iso CC="$SNOS_CC" LD="$SNOS_LD"
+
+      - name: QEMU acilis testi
+        env:
+          SNOS_BOOT_WAIT: "20"
+        run: |
+          mkdir -p build/test
+          python3 tests/qemu_boot_test.py build/snos.iso build/test/screen.ppm
+
+      - name: ISO ve ekran goruntusu
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: snos
+          path: |
+            build/snos.iso
+            build/test/screen.png
+          if-no-files-found: ignore
